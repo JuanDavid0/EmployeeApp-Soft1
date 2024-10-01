@@ -22,6 +22,14 @@ public class ModifyEmployeeServlet extends HttpServlet {
         ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
 
         String id = req.getParameter("searchId");
+
+        String errorMessage = validateId(id);
+        if (!errorMessage.isEmpty()) {
+            req.getSession().setAttribute("error", errorMessage);
+            resp.sendRedirect("error.jsp");
+            return;
+        }
+
         boolean found = false;
         for (Employee employee : employeeList) {
             if (employee.getId().equals(id)) {
@@ -51,6 +59,13 @@ public class ModifyEmployeeServlet extends HttpServlet {
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
 
+        String errorMessage = validateEmployeeData(id, name, email, phone);
+        if (!errorMessage.isEmpty()) {
+            req.getSession().setAttribute("error", errorMessage);
+            resp.sendRedirect("error.jsp");
+            return;
+        }
+
         boolean updated = false;
         for (Employee employee : employeeList) {
             if (employee.getId().equals(id)) {
@@ -62,18 +77,44 @@ public class ModifyEmployeeServlet extends HttpServlet {
             }
         }
 
-        /* PRUEBA CON PRINT */
-        System.out.println("Contenido del ArrayList después de la modificación:");
-        for (Employee emp : employeeList) {
-            System.out.println(emp);
-        }
-
         if (updated) {
             req.getSession().setAttribute("oper", "success");
         } else {
             req.getSession().setAttribute("oper", "error");
         }
+
         req.getSession().removeAttribute("employee");
         resp.sendRedirect("modify.jsp");
+    }
+
+    private String validateEmployeeData(String id, String name, String email, String phone) {
+        StringBuilder errors = new StringBuilder();
+
+        if (id == null || !id.matches("\\d+")) {
+            errors.append("ID debe ser numérico y no puede estar vacío.<br>");
+        }
+
+        if (name == null || name.trim().isEmpty()) {
+            errors.append("Nombre no puede estar vacío.<br>");
+        } else if (name.length() < 3) {
+            errors.append("Nombre debe tener al menos 3 caracteres.<br>");
+        }
+
+        if (email == null || !email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+            errors.append("Correo electrónico no válido.<br>");
+        }
+
+        if (phone == null || !phone.matches("\\d{7,10}")) {
+            errors.append("Teléfono debe contener entre 7 y 10 dígitos.<br>");
+        }
+
+        return errors.toString();
+    }
+
+    private String validateId(String id) {
+        if (id == null || !id.matches("\\d+")) {
+            return "ID debe ser numérico y no puede estar vacío.<br>";
+        }
+        return "";
     }
 }

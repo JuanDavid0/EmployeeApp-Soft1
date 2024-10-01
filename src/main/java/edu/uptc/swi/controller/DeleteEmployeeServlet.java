@@ -10,10 +10,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 @WebServlet("/DeleteEmployee")
 public class DeleteEmployeeServlet extends HttpServlet {
-    
+
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -22,6 +21,14 @@ public class DeleteEmployeeServlet extends HttpServlet {
         ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
 
         String id = req.getParameter("searchId");
+
+        String errorMessage = validateId(id);
+        if (!errorMessage.isEmpty()) {
+            req.getSession().setAttribute("error", errorMessage);
+            resp.sendRedirect("error.jsp");
+            return;
+        }
+
         boolean found = false;
         for (Employee employee : employeeList) {
             if (employee.getId().equals(id)) {
@@ -47,8 +54,15 @@ public class DeleteEmployeeServlet extends HttpServlet {
         ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
 
         String id = req.getParameter("id");
+
+        String errorMessage = validateId(id);
+        if (!errorMessage.isEmpty()) {
+            req.getSession().setAttribute("error", errorMessage);
+            resp.sendRedirect("error.jsp");
+            return;
+        }
+
         boolean deleted = false;
-        
         var iterator = employeeList.iterator();
         while (iterator.hasNext()) {
             Employee employee = iterator.next();
@@ -59,12 +73,6 @@ public class DeleteEmployeeServlet extends HttpServlet {
             }
         }
 
-        /* PRUEBA CON PRINT */
-        System.out.println("Contenido del ArrayList después de la eliminación:");
-        for (Employee emp : employeeList) {
-            System.out.println(emp);
-        }
-
         if (deleted) {
             req.getSession().setAttribute("oper", "deleted");
         } else {
@@ -73,5 +81,12 @@ public class DeleteEmployeeServlet extends HttpServlet {
 
         req.getSession().removeAttribute("employee");
         resp.sendRedirect("delete.jsp");
+    }
+
+    private String validateId(String id) {
+        if (id == null || !id.matches("\\d+")) {
+            return "ID debe ser numérico y no puede estar vacío.<br>";
+        }
+        return "";
     }
 }

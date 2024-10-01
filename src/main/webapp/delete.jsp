@@ -12,6 +12,7 @@
         <a href="index.jsp">Crear empleado</a>
         <a href="modify.jsp">Modificar empleado</a>
         <a href="delete.jsp">Borrar Empleado</a>
+        <a href="showAll.jsp">Mostrar Todos</a>rrar Empleado</a>
     </div>
     
     <div class="content">
