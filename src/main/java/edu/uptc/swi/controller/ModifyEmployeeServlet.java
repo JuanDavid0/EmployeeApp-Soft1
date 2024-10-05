@@ -1,10 +1,10 @@
 package edu.uptc.swi.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import edu.uptc.swi.model.Employee;
-import jakarta.servlet.ServletContext;
+import edu.uptc.swi.service.EmployeeDAOImpl;
+import edu.uptc.swi.service.IEmployeeDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,12 +15,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ModifyEmployeeServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private IEmployeeDAO employeeDAO;
+
+    @Override
+    public void init() {
+        employeeDAO = new EmployeeDAOImpl();
+        System.out.println("ModifyEmployeeServlet initialized.");
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
-
         String id = req.getParameter("searchId");
 
         String errorMessage = validateId(id);
@@ -30,17 +34,9 @@ public class ModifyEmployeeServlet extends HttpServlet {
             return;
         }
 
-        boolean found = false;
-        for (Employee employee : employeeList) {
-            if (employee.getId().equals(id)) {
-                System.out.println("Empleado encontrado: " + id);
-                req.getSession().setAttribute("employee", employee);
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
+        Employee employee = employeeDAO.findById(id);
+        if (employee != null) {
+            req.getSession().setAttribute("employee", employee);
             resp.sendRedirect("modify.jsp");
         } else {
             System.out.println("Empleado no encontrado: " + id);
@@ -51,9 +47,6 @@ public class ModifyEmployeeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
-
         String id = req.getParameter("id");
         String name = req.getParameter("name");
         String email = req.getParameter("email");
@@ -66,16 +59,13 @@ public class ModifyEmployeeServlet extends HttpServlet {
             return;
         }
 
-        boolean updated = false;
-        for (Employee employee : employeeList) {
-            if (employee.getId().equals(id)) {
-                employee.setName(name);
-                employee.setEmail(email);
-                employee.setPhone(phone);
-                updated = true;
-                break;
-            }
-        }
+        Employee employee = new Employee();
+        employee.setId(id);
+        employee.setName(name);
+        employee.setEmail(email);
+        employee.setPhone(phone);
+
+        boolean updated = employeeDAO.save(employee);
 
         if (updated) {
             req.getSession().setAttribute("oper", "success");

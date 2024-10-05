@@ -1,10 +1,10 @@
 package edu.uptc.swi.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import edu.uptc.swi.model.Employee;
-import jakarta.servlet.ServletContext;
+import edu.uptc.swi.service.EmployeeDAOImpl;
+import edu.uptc.swi.service.IEmployeeDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,20 +15,15 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AddEmployeeServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private IEmployeeDAO employeeDAO;
 
     @Override
     public void init() {
-        ServletContext context = getServletContext();
-        if (context.getAttribute("employeeList") == null) {
-            context.setAttribute("employeeList", new ArrayList<Employee>());
-        }
+        employeeDAO = new EmployeeDAOImpl();
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
-
         String id = req.getParameter("id");
         String name = req.getParameter("name");
         String email = req.getParameter("email");
@@ -37,7 +32,7 @@ public class AddEmployeeServlet extends HttpServlet {
         String errorMessage = validateEmployeeData(id, name, email, phone);
         if (!errorMessage.isEmpty()) {
             req.getSession().setAttribute("error", errorMessage);
-            resp.sendRedirect("error.jsp"); 
+            resp.sendRedirect("error.jsp");
             return;
         }
 
@@ -46,12 +41,16 @@ public class AddEmployeeServlet extends HttpServlet {
         emp.setName(name);
         emp.setEmail(email);
         emp.setPhone(phone);
-        employeeList.add(emp);
 
-        context.setAttribute("employeeList", employeeList);
+        boolean saveResult = employeeDAO.save(emp);
 
-        req.getSession().setAttribute("oper", "success");
-        resp.sendRedirect("index.jsp");
+        if (saveResult) {
+            req.getSession().setAttribute("oper", "success");
+            resp.sendRedirect("index.jsp");
+        } else {
+            req.getSession().setAttribute("error", "Error al guardar el empleado en la base de datos.");
+            resp.sendRedirect("error.jsp");
+        }
     }
 
     private String validateEmployeeData(String id, String name, String email, String phone) {

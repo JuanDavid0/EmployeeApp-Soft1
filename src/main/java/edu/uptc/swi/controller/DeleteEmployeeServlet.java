@@ -1,25 +1,31 @@
 package edu.uptc.swi.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import edu.uptc.swi.model.Employee;
-import jakarta.servlet.ServletContext;
+import edu.uptc.swi.service.EmployeeDAOImpl;
+import edu.uptc.swi.service.IEmployeeDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 @WebServlet("/DeleteEmployee")
 public class DeleteEmployeeServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private IEmployeeDAO employeeDAO;
+
+    @Override
+    public void init() {
+        employeeDAO = new EmployeeDAOImpl();
+        System.out.println("DeleteEmployeeServlet initialized.");
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
-
         String id = req.getParameter("searchId");
 
         String errorMessage = validateId(id);
@@ -29,30 +35,19 @@ public class DeleteEmployeeServlet extends HttpServlet {
             return;
         }
 
-        boolean found = false;
-        for (Employee employee : employeeList) {
-            if (employee.getId().equals(id)) {
-                System.out.println("Empleado encontrado: " + id);
-                req.getSession().setAttribute("employee", employee);
-                found = true;
-                break;
-            }
+        Employee employee = employeeDAO.findById(id);
+        if (employee != null) {
+            req.getSession().setAttribute("employee", employee);
+            req.getSession().setAttribute("oper", "found");
+        } else {
+            req.getSession().setAttribute("oper", "not_found");
         }
 
-        if (found) {
-            resp.sendRedirect("delete.jsp");
-        } else {
-            System.out.println("Empleado no encontrado: " + id);
-            req.getSession().setAttribute("oper", "not_found");
-            resp.sendRedirect("delete.jsp");
-        }
+        resp.sendRedirect("delete.jsp");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ServletContext context = getServletContext();
-        ArrayList<Employee> employeeList = (ArrayList<Employee>) context.getAttribute("employeeList");
-
         String id = req.getParameter("id");
 
         String errorMessage = validateId(id);
@@ -62,16 +57,7 @@ public class DeleteEmployeeServlet extends HttpServlet {
             return;
         }
 
-        boolean deleted = false;
-        var iterator = employeeList.iterator();
-        while (iterator.hasNext()) {
-            Employee employee = iterator.next();
-            if (employee.getId().equals(id)) {
-                iterator.remove();
-                deleted = true;
-                break;
-            }
-        }
+        boolean deleted = employeeDAO.deleteEmployeeById(id);
 
         if (deleted) {
             req.getSession().setAttribute("oper", "deleted");
@@ -89,4 +75,5 @@ public class DeleteEmployeeServlet extends HttpServlet {
         }
         return "";
     }
+
 }
