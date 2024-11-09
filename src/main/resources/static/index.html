@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee</title>
+    <link href="./css/empStyle.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>Employee App</h1>
+        <nav>
+            <a href="/index.html">Agregar Empleado</a>
+            <a href="/findbyid.html">Buscar Empleado por ID</a>
+            <a href="/findall.html">Ver Todos los Empleados</a>
+            <a href="/deletebyid.html">Eliminar Empleado por ID</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Ingrese los datos del empleado</h2>
+        <form action="/save" method="post">
+            <table cellspacing="3" cellpadding="3" border="1">
+                <tr>
+                    <td align="left">ID Empleado</td>
+                    <td><input type="text" name="id" required pattern="^[0-9]*$"
+                            title="Debe ingresar solo números para el ID."></td>
+                </tr>
+                <tr>
+                    <td align="left">Nombre Empleado</td>
+                    <td><input type="text" name="name" required></td>
+                </tr>
+                <tr>
+                    <td align="left">Email Empleado</td>
+                    <td><input type="email" name="email" required></td>
+                </tr>
+                <tr>
+                    <td align="left">Teléfono Empleado</td>
+                    <td><input type="tel" name="phone" required pattern="^[0-9]*$"
+                            title="Debe ingresar numero solamente"></td>
+                </tr>
+            </table>
+            <button type="submit">Enviar</button>
+        </form>
+    </main>
+</body>
+
+
+<footer>
+    <p>Juan David Ochoa Pinilla</p>
+    <p>Milton Nicolas Pirazan Forero</p>
+    <p>Pedro Eduardo Cruz Lopez</p>
+</footer>
+
+</html>

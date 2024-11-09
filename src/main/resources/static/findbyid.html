@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Empleado por ID</title>
+    <link href="./css/empstyle.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>Employee App</h1>
+        <nav>
+            <a href="/index.html">Agregar Empleado</a>
+            <a href="/findbyid.html">Buscar Empleado por ID</a>
+            <a href="/findall.html">Ver Todos los Empleados</a>
+            <a href="/deletebyid.html">Eliminar Empleado por ID</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Buscar Empleado por ID</h2>
+        <form id="searchForm">
+            <table cellspacing="3" cellpadding="3" border="1">
+                <tr>
+                    <td align="right">ID Empleado</td>
+                    <td><input type="text" name="id" id="employeeId" required pattern="^[0-9]*$"
+                            title="Por favor, ingrese solo números para el ID."></td>
+                </tr>
+            </table>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <div id="resultContainer"></div>
+    </main>
+</body>
+
+
+<footer>
+    <p>Juan David Ochoa Pinilla</p>
+    <p>Milton Nicolas Pirazan Forero</p>
+    <p>Pedro Eduardo Cruz Lopez</p>
+</footer>
+
+<script>
+    document.getElementById("searchForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const employeeId = document.getElementById("employeeId").value;
+
+        fetch(`/findbyid?id=${employeeId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la búsqueda");
+                }
+                return response.json();
+            })
+            .then(employee => {
+                if (!employee || !employee.id) {
+                    throw new Error("Error al encontrar el empleado. ID no encontrado.");
+                }
+                const resultContainer = document.getElementById("resultContainer");
+                resultContainer.innerHTML = `
+                <h3>Detalles del Empleado:</h3>
+                <p><strong>ID:</strong> ${employee.id}</p>
+                <p><strong>Nombre:</strong> ${employee.name}</p>
+                <p><strong>Email:</strong> ${employee.email}</p>
+                <p><strong>Telefono:</strong> ${employee.phone}</p>
+            `;
+            })
+            .catch(error => {
+                const resultContainer = document.getElementById("resultContainer");
+                resultContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            });
+    });
+</script>
+
+</html>

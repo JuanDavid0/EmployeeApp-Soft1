@@ -1,0 +1,119 @@
+body {
+    background-color: #012622;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #003B36;
+    color: #f9f9f9;
+    padding: 1em 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+header nav {
+    margin-top: 0.5em;
+}
+
+header nav a {
+    color: #f9f9f9;
+    text-decoration: none;
+    margin: 0 1em;
+    font-size: 1em;
+}
+
+header nav a:hover {
+    color: #ddd;
+    text-decoration: underline;
+}
+
+main {
+    padding: 2em;
+    max-width: 800px;
+    margin: auto;
+    background-color: #ECE5F0;
+    border-radius: 10px;
+    text-align: center;
+}
+
+main h2 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+form table {
+    width: 100%;
+    margin-bottom: 1em;
+    border-collapse: collapse;
+}
+
+form table td {
+    padding: 0.5em;
+}
+
+form table td:first-child {
+    text-align: center;
+    color: #555;
+    width: 30%;
+    font-style: oblique;
+    font-weight: bold;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1em;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 1em;
+    text-align: center;
+}
+
+.table th {
+    background-color: #012622;
+    color: #f0f0f0;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"] {
+    width: -webkit-fill-available;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button[type="submit"] {
+    background-color: #003B36;
+    color: #f9f9f9;
+    padding: 0.7em 1.5em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #555;
+}
+footer {
+    background-color: #003B36;
+    color: #f9f9f9;
+    text-align: center;
+    padding: 1em 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
